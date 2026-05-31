@@ -1,16 +1,23 @@
 # 🎬 Hollywood / Bollywood — Movie Guessing Game
 
-Multiplayer movie guessing game built with the MERN stack + Socket.io.
+Multiplayer movie guessing game built with React, Node.js, Express, and Socket.io using in-memory state management.
+
+## 📸 Screenshots
+
+| Home & Room Selection | Active Gameplay & Chat |
+|:---:|:---:|
+| ![Home Screen](screenshots/home_screenshot.png) | ![Gameplay Screen](screenshots/game_screenshot.png) |
 
 ## How to Play
 
-- **Picker** types or generates a random movie title
-- **Guesser** reveals letters one at a time using the A–Z keyboard
-- **9 chances** — one per letter in H·O·L·L·Y·W·O·O·D
-- **1 hint** per game — picker types a hint, guesser receives it
-- **Full guess** — guesser can attempt the full movie title at any time
-- **Chat** — both players chat throughout the game (multiplayer only)
-- **Roles swap** each round
+- **Picker** types a movie title or generates a random one from our built-in databases.
+- **Guesser** reveals letters one at a time using the interactive A–Z keyboard.
+- **9 chances** — one per letter in the word **H·O·L·L·Y·W·O·O·D**.
+- **1 hint** per game — picker can provide one hint, and guesser can request it at any time.
+- **Full guess** — guesser can attempt to guess the full movie title at any time.
+- **Scoreboard** — points are awarded to the guesser based on how few attempts they took to guess the movie, and players alternate roles.
+- **Real-Time Chat** — both players can chat with each other throughout the game!
+- **Play Against CPU** — single-player mode where you play against a smart computer picker.
 
 ---
 
@@ -26,9 +33,9 @@ npm run install:all     # installs server + client deps
 ### 2. Set up environment
 
 ```bash
-# Copy server env template
+# Copy env templates if needed
 cp server/.env.example server/.env
-# Edit server/.env and add your MongoDB URI (or use local MongoDB)
+cp client/.env.example client/.env
 ```
 
 ### 3. Run both server + client
@@ -42,70 +49,35 @@ npm run dev
 
 ---
 
-## 🌐 Deployment
-
-### Frontend → Vercel
-
-1. Push the `client/` folder (or the whole repo) to GitHub
-2. Go to [vercel.com](https://vercel.com), import the project
-3. Set **Root Directory** to `client`
-4. Set **Build Command**: `npm run build`
-5. Set **Output Directory**: `dist`
-6. Add environment variable:
-   ```
-   VITE_SERVER_URL = https://your-railway-app.railway.app
-   ```
-7. Deploy ✅
-
-### Backend → Railway
-
-1. Go to [railway.app](https://railway.app), create a new project
-2. Connect your GitHub repo, set **Root Directory** to `server`
-3. Add environment variables:
-   ```
-   MONGO_URI   = mongodb+srv://...  (from MongoDB Atlas)
-   CLIENT_URL  = https://your-vercel-app.vercel.app
-   PORT        = 5000  (Railway auto-sets this)
-   ```
-4. Deploy ✅
-
-### Database → MongoDB Atlas
-
-1. Create a free cluster at [cloud.mongodb.com](https://cloud.mongodb.com)
-2. Create a database user
-3. Whitelist all IPs: `0.0.0.0/0`
-4. Copy the connection string into `MONGO_URI`
-
----
-
 ## 📁 Project Structure
 
 ```
 ├── server/                  # Node.js + Express + Socket.io
 │   ├── index.js             # Entry point
-│   ├── models/Room.js       # MongoDB schema
-│   ├── socket/gameHandler.js # All game socket events
+│   ├── models/Room.js       # In-memory Room model & game state
+│   ├── socket/gameHandler.js # All game socket events & chat
 │   ├── data/
-│   │   ├── hollywood.js     # Hollywood movie list
-│   │   └── bollywood.js     # Bollywood movie list
-│   └── utils/computer.js   # CPU guessing strategy
+│   │   ├── hollywood.js     # Hollywood movie database
+│   │   └── bollywood.js     # Bollywood movie database
+│   └── utils/computer.js    # CPU guessing strategy & hint generator
 │
 ├── client/                  # React 18 + Vite
-│   ├── vercel.json          # SPA routing for Vercel
+│   ├── vercel.json          # SPA routing config
 │   └── src/
-│       ├── context/GameContext.jsx  # Global state + socket events
+│       ├── context/GameContext.jsx  # Global state & socket listeners
 │       ├── pages/
-│       │   ├── Home.jsx     # Landing page
-│       │   ├── Lobby.jsx    # Waiting room
-│       │   └── Game.jsx     # Game screen
+│       │   ├── Home.jsx     # Landing page (Create/Join/CPU)
+│       │   ├── Lobby.jsx    # Waiting room & Room key sharing
+│       │   └── Game.jsx     # Main game screen
 │       └── components/
-│           ├── MovieDisplay.jsx  # Blanks display
-│           ├── Keyboard.jsx      # A–Z letter grid
-│           ├── LivesDisplay.jsx  # HOLLYWOOD lives
-│           ├── Chat.jsx          # Real-time chat
-│           └── HintBox.jsx       # Hint banner
+│           ├── MovieDisplay.jsx  # Blanks and word reveal
+│           ├── Keyboard.jsx      # Interactive letter grid
+│           ├── LivesDisplay.jsx  # HOLLYWOOD lives indicator
+│           ├── Chat.jsx          # Live chat interface
+│           ├── Scoreboard.jsx    # Point system & alternate rounds
+│           └── HintBox.jsx       # Hint request & display banner
 │
-└── package.json             # Root: run both with `npm run dev`
+└── package.json             # Root: scripts to run concurrently
 ```
 
 ---
@@ -117,6 +89,4 @@ npm run dev
 | Frontend  | React 18, Vite, React Router 6   |
 | Backend   | Node.js, Express 4               |
 | Real-time | Socket.io 4                      |
-| Database  | MongoDB + Mongoose               |
-| Deploy FE | Vercel                           |
-| Deploy BE | Railway / Render                 |
+| Database  | In-memory state (No database overhead) |
